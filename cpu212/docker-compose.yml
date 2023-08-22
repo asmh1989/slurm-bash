@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  node:
+    image: asmh1989/ubuntu-slurm
+    hostname: gpu_28
+    container_name: node_gpu_28
+    restart: always
+    user: admin
+    privileged: true
+    volumes:
+      - /public:/public
+      - /mnt:/mnt
+      - ./docker-entrypoint.sh:/etc/slurm/docker-entrypoint.sh
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - SLURM_NODENAME=gpu_28
+    ports:
+      - 6818:6818
+      - 6817:6817
+    extra_hosts:
+      - "szdata:192.168.2.26"
+    # links:
+    #   - slurmmaster
+    deploy:
+      resources:
+        # limits:
+        #   cpus: "32.0"
+        #   memory: 48G
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: [ "1", "0" ]
+              capabilities: [ gpu ]
